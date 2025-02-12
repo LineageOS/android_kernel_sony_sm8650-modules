@@ -15,6 +15,7 @@
 #include <linux/pwm.h>
 #include <linux/string.h>
 #include <video/mipi_display.h>
+#include <linux/drm_notify.h>
 
 #include "dsi_panel.h"
 #include "dsi_ctrl_hw.h"
@@ -5044,6 +5045,7 @@ int dsi_panel_set_lp1(struct dsi_panel *panel)
 {
 	int rc = 0;
 	int bl_lvl;
+	struct drm_ext_event event;
 
 	if (!panel) {
 		DSI_ERR("invalid params\n");
@@ -5077,6 +5079,9 @@ int dsi_panel_set_lp1(struct dsi_panel *panel)
 
 	bl_lvl = dsi_panel_get_backlight(panel);
 	dsi_panel_set_backlight(panel, bl_lvl);
+
+	event.data = &(panel->spec_pdata->aod_mode);
+	drm_notifier_call_chain(DRM_EXT_EVENT_AOD_CHANGE, &event);
 #else
 	if (rc)
 		DSI_ERR("[%s] failed to send DSI_CMD_SET_LP1 cmd, rc=%d\n",
@@ -5112,6 +5117,7 @@ exit:
 int dsi_panel_set_nolp(struct dsi_panel *panel)
 {
 	int rc = 0;
+	struct drm_ext_event event;
 
 	if (!panel) {
 		DSI_ERR("invalid params\n");
@@ -5139,6 +5145,9 @@ int dsi_panel_set_nolp(struct dsi_panel *panel)
 		panel->spec_pdata->aod_mode = 0;
 		pr_notice("%s: set AOD mode OFF\n", __func__);
 	}
+
+	event.data = &(panel->spec_pdata->aod_mode);
+	drm_notifier_call_chain(DRM_EXT_EVENT_AOD_CHANGE, &event);
 #else
 	if (rc)
 		DSI_ERR("[%s] failed to send DSI_CMD_SET_NOLP cmd, rc=%d\n",
