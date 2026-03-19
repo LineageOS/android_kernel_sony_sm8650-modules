@@ -24,6 +24,10 @@
 #include "sde_dbg.h"
 #include "dsi_parser.h"
 
+#ifdef CONFIG_DRM_SDE_SPECIFIC_PANEL
+#include "dsi_panel_driver.h"
+#endif /* CONFIG_DRM_SDE_SPECIFIC_PANEL */
+
 #define to_dsi_display(x) container_of(x, struct dsi_display, host)
 #define INT_BASE_10 10
 
@@ -50,7 +54,11 @@ static struct dsi_display_boot_param boot_displays[MAX_DSI_ACTIVE_DISPLAY] = {
 static void dsi_display_panel_id_notification(struct dsi_display *display);
 
 static const struct of_device_id dsi_display_dt_match[] = {
+#ifdef CONFIG_DRM_SDE_SPECIFIC_PANEL
+	{.compatible = "somc,dsi-display"},
+#else
 	{.compatible = "qcom,dsi-display"},
+#endif /* CONFIG_DRM_SDE_SPECIFIC_PANEL */
 	{}
 };
 
@@ -74,6 +82,13 @@ static bool is_sim_panel(struct dsi_display *display)
 static bool phy_pll_bypass(struct dsi_display *display)
 {
 	return display->ctrl[display->cmd_master_idx].phy->hw.phy_pll_bypass;
+}
+
+static struct dsi_display *main_display;
+
+struct dsi_display *dsi_display_get_main_display(void)
+{
+	return main_display;
 }
 
 static void dsi_display_mask_ctrl_error_interrupts(struct dsi_display *display,
@@ -281,7 +296,11 @@ error:
 	return rc;
 }
 
+#ifdef CONFIG_DRM_SDE_SPECIFIC_PANEL
+int dsi_display_cmd_engine_enable(struct dsi_display *display)
+#else
 static int dsi_display_cmd_engine_enable(struct dsi_display *display)
+#endif /* CONFIG_DRM_SDE_SPECIFIC_PANEL */
 {
 	int rc = 0;
 	int i;
@@ -323,7 +342,11 @@ done:
 	return rc;
 }
 
+#ifdef CONFIG_DRM_SDE_SPECIFIC_PANEL
+int dsi_display_cmd_engine_disable(struct dsi_display *display)
+#else
 static int dsi_display_cmd_engine_disable(struct dsi_display *display)
+#endif  /* CONFIG_DRM_SDE_SPECIFIC_PANEL */
 {
 	int rc = 0;
 	int i;
@@ -6126,6 +6149,10 @@ int dsi_display_dev_probe(struct platform_device *pdev)
 	display->panel_node = panel_node;
 	display->pdev = pdev;
 	display->boot_disp = boot_disp;
+
+#ifdef CONFIG_DRM_SDE_SPECIFIC_PANEL
+	main_display = display;
+#endif /* CONFIG_DRM_SDE_SPECIFIC_PANEL */
 
 	dsi_display_parse_cmdline_topology(display, index);
 
