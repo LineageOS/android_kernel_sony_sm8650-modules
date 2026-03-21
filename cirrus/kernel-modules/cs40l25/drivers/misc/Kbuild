@@ -1,0 +1,9 @@
+# add -Wall to try to catch everything we can.
+EXTRA_CFLAGS += -Wall
+
+ccflags-y := -I $(srctree)/../sm8650-modules/cirrus/kernel-modules/cs40l25/include/
+# ccflags-y += -D CONFIG_HAPTICS_CS40L2X_INPUT
+
+cirrus_cs40l2x-objs = cs40l2x.o cs40l2x-tables.o
+obj-m += cirrus_cs40l2x.o
+

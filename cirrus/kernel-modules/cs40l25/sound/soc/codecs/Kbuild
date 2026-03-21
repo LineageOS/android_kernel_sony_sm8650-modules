@@ -1,0 +1,7 @@
+# add -Wall to try to catch everything we can.
+EXTRA_CFLAGS += -Wall
+
+ccflags-y := -I $(srctree)/../sm8650-modules/cirrus/kernel-modules/cs40l25/include/
+
+cirrus_cs40l2x_codec-objs = cs40l2x.o
+obj-m += cirrus_cs40l2x_codec.o
