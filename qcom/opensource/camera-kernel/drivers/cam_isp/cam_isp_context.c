@@ -3278,7 +3278,7 @@ static int __cam_isp_ctx_reg_upd_in_applied_state(
 				request_id = req->request_id;
 				ctx_isp->reported_req_id = request_id;
 				__cam_isp_ctx_update_event_record(ctx_isp,
-					CAM_ISP_CTX_EVENT_EPOCH, req);
+					CAM_ISP_CTX_EVENT_EPOCH, req, NULL);
 				break;
 			}
 		}
@@ -3599,7 +3599,7 @@ static int __cam_isp_ctx_reg_upd_in_sof(struct cam_isp_context *ctx_isp,
 						request_id = active_req->request_id;
 						ctx_isp->reported_req_id = request_id;
 						__cam_isp_ctx_update_event_record(ctx_isp,
-							CAM_ISP_CTX_EVENT_EPOCH, active_req);
+							CAM_ISP_CTX_EVENT_EPOCH, active_req, NULL);
 						break;
 					}
 				}
@@ -3635,7 +3635,7 @@ end:
 
 /* sony extension begin */
 static int __cam_isp_ctx_reg_upd_in_bubble(struct cam_isp_context *ctx_isp,
-										   void *evt_data)
+	void *evt_data)
 {
 	int rc = 0;
 	uint64_t  request_id  = 0;
@@ -3655,38 +3655,38 @@ static int __cam_isp_ctx_reg_upd_in_bubble(struct cam_isp_context *ctx_isp,
 		ctx_isp->reg_update_pending = true;
 
 	/*
-	 l ast_sof_timestamp equ*als sof_timestamp_val means the sof event is not
-	 received, can not notify sof.
-	 */
+		last_sof_timestamp equals sof_timestamp_val means the sof event is not
+		received, can not notify sof.
+	*/
 	if (ctx_isp->sof_timestamp_val > 0 &&
 		ctx_isp->last_sof_timestamp != ctx_isp->sof_timestamp_val) {
 		__cam_isp_ctx_notify_trigger_util(CAM_TRIGGER_POINT_SOF, ctx_isp);
 
-	list_for_each_entry(req, &ctx->active_req_list, list) {
-		req_isp = (struct cam_isp_ctx_req *) req->req_priv;
-		if ((!req_isp->bubble_detected) &&
-			(req->request_id > ctx_isp->reported_req_id)) {
-			request_id = req->request_id;
-		ctx_isp->reported_req_id = request_id;
-		__cam_isp_ctx_update_event_record(ctx_isp,
-										  CAM_ISP_CTX_EVENT_EPOCH, req);
-		break;
+		list_for_each_entry(req, &ctx->active_req_list, list) {
+			req_isp = (struct cam_isp_ctx_req *) req->req_priv;
+			if ((!req_isp->bubble_detected) &&
+				(req->request_id > ctx_isp->reported_req_id)) {
+				request_id = req->request_id;
+				ctx_isp->reported_req_id = request_id;
+				__cam_isp_ctx_update_event_record(ctx_isp,
+					CAM_ISP_CTX_EVENT_EPOCH, req, NULL);
+				break;
 			}
-	}
-	if (ctx_isp->substate_activated == CAM_ISP_CTX_ACTIVATED_BUBBLE)
-		request_id = 0;
+		}
+		if (ctx_isp->substate_activated == CAM_ISP_CTX_ACTIVATED_BUBBLE)
+			request_id = 0;
 
 		__cam_isp_ctx_send_sof_timestamp(ctx_isp, request_id,
-										 CAM_REQ_MGR_SOF_EVENT_SUCCESS);
+			CAM_REQ_MGR_SOF_EVENT_SUCCESS);
 
 		__cam_isp_ctx_update_state_monitor_array(ctx_isp,
-												 CAM_ISP_STATE_CHANGE_TRIGGER_EPOCH,
-										   request_id);
+			CAM_ISP_STATE_CHANGE_TRIGGER_EPOCH,
+			request_id);
 
 		ctx_isp->last_sof_timestamp = ctx_isp->sof_timestamp_val;
-		}
-		end:
-		return rc;
+	}
+end:
+	return rc;
 }
 /* sony extension end */
 
@@ -3733,7 +3733,7 @@ static int __cam_isp_ctx_epoch_in_applied(struct cam_isp_context *ctx_isp,
 				"move request %lld to active list(cnt = %d), ctx %u",
 				req->request_id, ctx_isp->active_req_cnt, ctx->ctx_id);
 			__cam_isp_ctx_update_event_record(ctx_isp,
-				CAM_ISP_CTX_EVENT_RUP, req);
+				CAM_ISP_CTX_EVENT_RUP, req, NULL);
 		} else {
 			/* no io config, so the request is completed. */
 			list_add_tail(&req->list, &ctx->free_req_list);
@@ -3986,7 +3986,7 @@ static int __cam_isp_ctx_sof_in_epoch(struct cam_isp_context *ctx_isp,
 				request_id = req->request_id;
 				ctx_isp->reported_req_id = request_id;
 				__cam_isp_ctx_update_event_record(ctx_isp,
-					CAM_ISP_CTX_EVENT_EPOCH, req);
+					CAM_ISP_CTX_EVENT_EPOCH, req, NULL);
 				break;
 			}
 		}
@@ -7060,7 +7060,7 @@ static int __cam_isp_ctx_rdi_only_reg_upd_in_bubble_applied_state(
 			__cam_isp_ctx_substate_val_to_type(
 			ctx_isp->substate_activated));
 		__cam_isp_ctx_update_event_record(ctx_isp,
-			CAM_ISP_CTX_EVENT_RUP, req);
+			CAM_ISP_CTX_EVENT_RUP, req, NULL);
 		ctx_isp->last_sof_timestamp = ctx_isp->sof_timestamp_val;
 	}
 #endif
