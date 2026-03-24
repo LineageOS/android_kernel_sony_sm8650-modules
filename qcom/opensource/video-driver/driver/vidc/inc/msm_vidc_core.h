@@ -64,6 +64,8 @@ struct msm_vidc_core_power {
 	u64 bw_llcc;
 };
 
+#define SUBSYS_CRASH_REASON_LEN 512
+
 struct msm_vidc_core {
 	struct platform_device                *pdev;
 	struct msm_video_device                vdev[2];
@@ -126,6 +128,7 @@ struct msm_vidc_core {
 	u32                                    packet_id;
 	u32                                    sys_init_id;
 	struct msm_vidc_synx_fence_data        synx_fence_data;
+	char crash_reason_buf[SUBSYS_CRASH_REASON_LEN];
 };
 
 #endif // _MSM_VIDC_CORE_H_
