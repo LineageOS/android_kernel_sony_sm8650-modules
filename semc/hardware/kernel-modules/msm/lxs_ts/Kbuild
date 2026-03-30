@@ -1,7 +1,5 @@
 MODULE_NAME = lxs_touchscreen
 
-$(info "KBUILD_EXTRA_OPTIONS Is $(KBUILD_EXTRA_OPTIONS)")
-
 obj-m := $(MODULE_NAME).o
 
 $(MODULE_NAME)-objs := lxs_ts.o

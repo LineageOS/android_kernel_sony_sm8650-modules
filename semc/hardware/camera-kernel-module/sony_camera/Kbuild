@@ -1,7 +1,3 @@
-$(info "KERNEL_ROOT Is $(KERNEL_ROOT)")
-$(info "SONY_CAMERA_ROOT Is $(SONY_CAMERA_ROOT)")
-$(info "CAMERA_KERNEL_ROOT Is $(CAMERA_KERNEL_ROOT)")
-
 EXTRA_CFLAGS += -I$(SONY_CAMERA_ROOT)/include
 ccflags-y += ${ccflags-m}
 ccflags-y += -I$(CAMERA_KERNEL_ROOT)
