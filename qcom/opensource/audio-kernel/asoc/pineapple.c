@@ -2696,8 +2696,6 @@ static int msm_asoc_machine_probe(struct platform_device *pdev)
 	if (!pdata)
 		return -ENOMEM;
 
-	dev_err(&pdev->dev, "%s: pee data\n", __func__);
-
 	of_property_read_u32(pdev->dev.of_node,
 						"qcom,wcd-disabled",
 						&pdata->wcd_disabled);
@@ -2743,8 +2741,6 @@ static int msm_asoc_machine_probe(struct platform_device *pdev)
 	platform_set_drvdata(pdev, card);
 	snd_soc_card_set_drvdata(card, pdata);
 
-	dev_err(&pdev->dev, "%s: set drv data\n", __func__);
-
 	ret = msm_asoc_parse_soundcard_name(pdev, card);
 	if (ret) {
 		dev_err(&pdev->dev, "%s: parse soundcard name failed, err:%d\n",
@@ -2761,15 +2757,11 @@ static int msm_asoc_machine_probe(struct platform_device *pdev)
 		}
 	}
 
-	dev_err(&pdev->dev, "%s: populating DAI\n", __func__);
-
 	ret = msm_populate_dai_link_component_of_node(card);
 	if (ret) {
 		ret = -EPROBE_DEFER;
 		goto err;
 	}
-
-	dev_err(&pdev->dev, "%s: done\n", __func__);
 
 	/* parse upd configuration */
 	msm_parse_upd_configuration(pdev, pdata);
@@ -2778,8 +2770,6 @@ static int msm_asoc_machine_probe(struct platform_device *pdev)
 	card->codec_conf = msm_codec_conf;
 	card->num_configs = sizeof(msm_codec_conf) / sizeof(msm_codec_conf[0]);
 #endif
-
-	dev_err(&pdev->dev, "%s: parsed upd\n", __func__);
 
 	ret = devm_snd_soc_register_card(&pdev->dev, card);
 	dev_err(&pdev->dev, "%s: snd_soc_register_card returns %i\n", __func__, ret);
